@@ -1,0 +1,5 @@
+*.o
+assets/*.wav
+copy_wav
+create_speech
+
