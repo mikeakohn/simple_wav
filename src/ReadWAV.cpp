@@ -5,7 +5,7 @@
  *     Web: https://www.mikekohn.net/
  * License: GPL
  *
- * Copyright 2025 by Michael Kohn
+ * Copyright 2025-2026 by Michael Kohn
  *
  */
 
@@ -32,15 +32,47 @@ int ReadWAV::open_file(const char *filename)
 {
   in = fopen(filename, "rb");
 
-  if (in == NULL) { return -1; }
+  if (in == nullptr) { return -1; }
 
   parse_header();
-  parse_fmt_chunk();
-  parse_data_chunk();
 
   read_count = 0;
 
-  return 0;
+  while (true)
+  {
+    Chunk chunk;
+
+    if (parse_chunk(chunk) == -1)
+    {
+      printf("Error reading chunk\n");
+      return -1;
+    }
+
+    if (!quiet)
+    {
+      printf("Chunk\n");
+      printf("----------------------------\n");
+      printf("      Chunk Type: %.4s\n", chunk.type);
+      printf("          Length: %d\n", chunk.length);
+    }
+
+    if (memcmp(chunk.type, "fmt ", 4) == 0)
+    {
+      parse_fmt_chunk(chunk);
+    }
+      else
+    if (memcmp(chunk.type, "data", 4) == 0)
+    {
+      parse_data_chunk(chunk);
+      return 0;
+    }
+      else
+    {
+      fseek(in, chunk.length, SEEK_CUR);
+    }
+  }
+
+  return -1;
 }
 
 int ReadWAV::read_data(double *samples, int count)
@@ -136,16 +168,18 @@ int ReadWAV::read_data(int16_t *samples, int count)
   return total_read;
 }
 
-int ReadWAV::read_chars(char *s, int n)
+int ReadWAV::read_chars(char *s, int count)
 {
-  int t,ch;
+  int t, ch;
 
-  for (t = 0; t < n; t++)
+  // Read in count characters and null terminate.
+  for (t = 0; t < count; t++)
   {
     ch = getc(in);
     if (ch == EOF) return -1;
     s[t] = ch;
   }
+
   s[t] = 0;
 
   return 0;
@@ -172,7 +206,6 @@ uint16_t ReadWAV::read_int16()
 
   return t;
 }
-
 
 int ReadWAV::parse_header()
 {
@@ -202,13 +235,16 @@ int ReadWAV::parse_header()
   return 0;
 }
 
-int ReadWAV::parse_fmt_chunk()
+int ReadWAV::parse_chunk(Chunk &chunk)
 {
-  char chunk_type[5];
-  int length;
+  if (fread(chunk.type, 1, 4, in) != 4) { return -1; }
+  chunk.length = read_int32();
 
-  read_chars(chunk_type, 4);
-  length = read_int32();
+  return 0;
+}
+
+int ReadWAV::parse_fmt_chunk(const Chunk &chunk)
+{
   fmt_chunk.format_type      = read_int16();
   fmt_chunk.channel_numbers  = read_int16();
   fmt_chunk.sample_rate      = read_int32();
@@ -218,10 +254,12 @@ int ReadWAV::parse_fmt_chunk()
 
   if (!quiet)
   {
+#if 0
     printf("FMT Chunk\n");
     printf("----------------------------\n");
-    printf("      Chunk Type: %s\n", chunk_type);
-    printf("          Length: %d\n", length);
+    printf("      Chunk Type: %.4s\n", chunk.type);
+    printf("          Length: %d\n", chunk.length);
+#endif
     printf("     Format Type: ");
 
     switch (fmt_chunk.format_type)
@@ -233,7 +271,7 @@ int ReadWAV::parse_fmt_chunk()
         printf("Stereo\n");
         break;
       default:
-        printf("Unkown\n");
+        printf("Unknown\n");
         break;
     }
 
@@ -267,26 +305,27 @@ int ReadWAV::parse_fmt_chunk()
   return 0;
 }
 
-int ReadWAV::parse_data_chunk()
+int ReadWAV::parse_data_chunk(const Chunk &chunk)
 {
-  char riff_type[5];
-
-  read_chars(riff_type, 4);
-  data_length = read_int32();
+  data_length = chunk.length;
 
   if (!quiet)
   {
+#if 0
     printf("Data Header\n");
     printf("----------------------------\n");
     printf("          Length: %d\n", data_length);
     printf("            Type: %s\n", riff_type);
     printf("----------------------------\n");
+#endif
   }
 
+#if 0
   if (strncmp(riff_type, "data", 4) != 0)
   {
     return -1;
   }
+#endif
 
   return 0;
 }

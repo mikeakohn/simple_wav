@@ -33,6 +33,17 @@ private:
 
   bool quiet;
 
+  struct Chunk
+  {
+    Chunk() : length { 0 }
+    {
+      memset(type, 0, sizeof(type));
+    }
+
+    char type[4];
+    uint32_t length;
+  };
+
   struct fmt_chunk_t
   {
     uint16_t format_type;
@@ -48,8 +59,9 @@ private:
   uint16_t read_int16();
 
   int parse_header();
-  int parse_fmt_chunk();
-  int parse_data_chunk();
+  int parse_chunk(Chunk &chunk);
+  int parse_fmt_chunk(const Chunk &chunk);
+  int parse_data_chunk(const Chunk &chunk);
 };
 
 #endif
