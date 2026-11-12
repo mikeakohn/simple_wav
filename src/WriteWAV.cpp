@@ -16,9 +16,10 @@
 #include "WriteWAV.h"
 
 WriteWAV::WriteWAV() :
-  fp          { nullptr },
-  channels    {       2 },
-  sample_rate {   44100 }
+  fp             { nullptr },
+  header_written {   false },
+  channels       {       2 },
+  sample_rate    {   44100 }
 {
 }
 
@@ -33,7 +34,7 @@ int WriteWAV::create(const char *filename)
 
   if (fp == NULL) { return -1; }
 
-  write_header();
+  //write_header();
 
   return 0;
 }
@@ -48,10 +49,20 @@ void WriteWAV::finish()
 
 void WriteWAV::write_data(int16_t *samples, int length)
 {
-  for (int i = 0; i < length; i += 2)
+  if (channels == 1)
   {
-    write_int16(samples[i + 0]);
-    write_int16(samples[i + 1]);
+    for (int i = 0; i < length; i++)
+    {
+      write_int16(samples[i]);
+    }
+  }
+  else
+  {
+    for (int i = 0; i < length; i += 2)
+    {
+      write_int16(samples[i + 0]);
+      write_int16(samples[i + 1]);
+    }
   }
 }
 
@@ -78,7 +89,11 @@ void WriteWAV::write_tone(float frequency, int volume, float seconds)
   for (int n = 0; n < samples; n++)
   {
     write_int16(value);
-    write_int16(0);
+
+    if (channels > 1)
+    {
+       write_int16(0);
+    }
 
     i = i + 1;
 
@@ -112,6 +127,8 @@ void WriteWAV::write_header()
   fwrite("data", 1, 4, fp);
   marker.data = ftell(fp);
   write_int32(0);
+
+  header_written = true;
 }
 
 void WriteWAV::write_footer()

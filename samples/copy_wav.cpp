@@ -5,7 +5,7 @@
  *     Web: https://www.mikekohn.net/
  * License: GPL
  *
- * Copyright 2025 by Michael Kohn
+ * Copyright 2025-2026 by Michael Kohn
  *
  */
 
@@ -31,6 +31,7 @@ int main(int argc, char *argv[])
   read_wav.open_file(argv[1]);
 
   write_wav.create(argv[2]);
+  write_wav.start();
 
   int16_t samples[2];
 

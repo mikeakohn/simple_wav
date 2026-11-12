@@ -5,12 +5,11 @@
  *     Web: https://www.mikekohn.net/
  * License: GPLv3
  *
- * Copyright 2025 by Michael Kohn
+ * Copyright 2025-2026 by Michael Kohn
  *
  */
 
-#ifndef READ_WAV_H
-#define READ_WAV_H
+#pragma once
 
 #include <stdint.h>
 
@@ -63,6 +62,4 @@ private:
   int parse_fmt_chunk(const Chunk &chunk);
   int parse_data_chunk(const Chunk &chunk);
 };
-
-#endif
 

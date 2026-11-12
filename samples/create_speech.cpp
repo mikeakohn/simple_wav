@@ -5,7 +5,7 @@
  *     Web: https://www.mikekohn.net/
  * License: GPL
  *
- * Copyright 2025 by Michael Kohn
+ * Copyright 2025-2026 by Michael Kohn
  *
  */
 
@@ -56,6 +56,7 @@ int main(int argc, char *argv[])
   FILE *fp = fopen(argv[1], "rb");
 
   write_wav.create(argv[2]);
+  write_wav.start();
 
 #if 0
   append_sound(write_wav, "assets/m.wav");

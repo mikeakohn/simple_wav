@@ -5,12 +5,11 @@
  *     Web: https://www.mikekohn.net/
  * License: GPL
  *
- * Copyright 2025 by Michael Kohn
+ * Copyright 2025-2026 by Michael Kohn
  *
  */
 
-#ifndef SOUND_UTIL_H
-#define SOUND_UTIL_H
+#pragma once
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,6 +28,4 @@ private:
   ~SoundUtil() { }
 
 };
-
-#endif
 

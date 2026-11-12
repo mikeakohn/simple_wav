@@ -10,6 +10,9 @@ OBJECTS= \
   WriteWAV.o
 
 default: $(OBJECTS) $(OTHER_OBJECTS)
+	$(CPP) -o ../a440 ../samples/a440.cpp \
+	   $(OBJECTS) \
+	   $(CPPFLAGS) $(LDFLAGS)
 	$(CPP) -o ../copy_wav ../samples/copy_wav.cpp \
 	   $(OBJECTS) \
 	   $(CPPFLAGS) $(LDFLAGS)
@@ -21,6 +24,5 @@ default: $(OBJECTS) $(OTHER_OBJECTS)
 	$(CPP) -c $< -o $*.o $(CPPFLAGS)
 
 clean:
-	@rm -f midi_guitar midi_guitar_int *.o
 	@echo "Clean!"
 

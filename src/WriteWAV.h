@@ -5,12 +5,11 @@
  *     Web: https://www.mikekohn.net/
  * License: GPL
  *
- * Copyright 2025 by Michael Kohn
+ * Copyright 2025-2026 by Michael Kohn
  *
  */
 
-#ifndef WRITE_WAV_H
-#define WRITE_WAV_H
+#pragma once
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,6 +22,24 @@ public:
 
   int create(const char *filename);
   void finish();
+
+  int set_sample_rate(int value)
+  {
+    if (header_written) { return -1; }
+    sample_rate = value;
+
+    return 0;
+  }
+
+  int set_channels(int value)
+  {
+    if (header_written) { return -1; }
+    channels = value;
+
+    return 0;
+  }
+
+  void start() { write_header(); }
 
   void write_data(int16_t *samples, int length);
   void write_tone(float frequency, int volume, float seconds);
@@ -48,10 +65,9 @@ private:
     long data;
   } marker;
 
+  bool header_written;
   int channels;
   int sample_rate;
 
 };
-
-#endif
 
