@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 
 #ifndef USE_WRITE_TONE 
   const int length = 48000 / 880;
-  int16_t sample = 16384;
+  int16_t sample = 32767;
 
   for (int i = 0; i < 48000; i++)
   {
@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
     write_wav.write_data(&sample, 1);
   }
 #else
-  write_wav.write_tone(440, 16384, 1.0);
+  write_wav.write_tone(440, 32767, 1.0);
 #endif
 
   write_wav.finish();

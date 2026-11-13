@@ -6,6 +6,6 @@ default:
 	$(CPP) -c $*.cxx $(CFLAGS)
 
 clean:
-	@rm -f copy_wav create_speech build/*.o
+	@rm -f a440 copy_wav create_speech build/*.o
 	@echo "Clean!"
 
